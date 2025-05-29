@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hashes and Macs | better late than never.</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Hashes and Macs" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Wonky hash &amp; mac Description In this challenge you’re given a very bad hash function and an associated very bad MAC construction." />
+<meta property="og:description" content="Wonky hash &amp; mac Description In this challenge you’re given a very bad hash function and an associated very bad MAC construction." />
+<link rel="canonical" href="http://localhost:4000/ctf/writeups/cryptanalysis/02/" />
+<meta property="og:url" content="http://localhost:4000/ctf/writeups/cryptanalysis/02/" />
+<meta property="og:site_name" content="better late than never." />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-08T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hashes and Macs" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-05-08T00:00:00+02:00","datePublished":"2025-05-08T00:00:00+02:00","description":"Wonky hash &amp; mac Description In this challenge you’re given a very bad hash function and an associated very bad MAC construction.","headline":"Hashes and Macs","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ctf/writeups/cryptanalysis/02/"},"url":"http://localhost:4000/ctf/writeups/cryptanalysis/02/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="better late than never." /><link rel="icon" href="/assets/favicon.gif" type="image/gif">
+
+</head>
+<body>
+      <div class="layout-grid">
+        <aside class="sidebar">
+          <nav class="sidebar">
+  <ul>
+    <li><a href="/">home</a></li>
+    <ul class="submenu">
+    <li>
+      <span>life</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>tech</span>
+      <ul class="subsubmenu">
+        <li><a href="/ctf">ctf</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>text</span>
+      <ul class="subsubmenu">
+        <li><a href="/text">thoughts</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>travel</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>vibes</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+
+
+        </aside>
+
+        <main class="main">
+
+
+    
+            <div class="container">
+                    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Hashes and Macs</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-08T00:00:00+02:00" itemprop="datePublished">May 8, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="wonky-hash--mac">Wonky hash &amp; mac</h1>
+<h2 id="description">Description</h2>
+<p>In this challenge you’re given a very bad hash function and an associated very bad MAC construction.</p>
+
+<p>This task has two parts:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Implement a length-extension attack against the MAC wonky_mac(). You may find all the code, a valid authenticated message, and an oracle to check the correctness of your forgery at https://cry.cry.cit.tum.de/week02/. The forgery is correct when the oracle output turns green instead of red or orange.
+Construct a collision for the hash function wonky_hash(). Note that no advanced techniques (e.g., differential cryptanalysis) are needed here. However, the solution may also not be immediately obvious from the content of the lectures — you'll need to get a bit creative for this one.
+</code></pre></div></div>
+
+<h3 id="task-details">Task details</h3>
+<p>For the first part we visit the page and get the following details:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given: wonky_mac(b"Hello, world!", secret).hex() = "48656c6c6f2c20776f726c64216b1ee67fa43baa0cdab734decbfef83a"
+
+Task: Find blob such that wonky_mac_open(blob, secret) returns a (byte) string containing the substring "I solved it!".
+</code></pre></div></div>
+<h2 id="wonkys-constructions">Wonky’s constructions</h2>
+<p>The hash function is a Merkle–Damgård hash:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wonky_hash</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="n">padded</span> <span class="o">=</span> <span class="nf">pad</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">padded</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">32</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">padded</span><span class="p">),</span> <span class="mi">32</span><span class="p">)]</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\xcc</span><span class="sh">'</span> <span class="o">*</span> <span class="mi">16</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="nf">wonky_compress</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">state</span>
+</code></pre></div></div>
+
+<p>Hence everything is based on the underlying compression function:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wonky_compress</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+    <span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">D</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">.</span><span class="nf">from_bytes</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">],</span><span class="sh">'</span><span class="s">big</span><span class="sh">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">.</span><span class="nf">from_bytes</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">],</span><span class="sh">'</span><span class="s">big</span><span class="sh">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">F</span> <span class="o">^=</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">F</span> <span class="o">^=</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">F</span> <span class="o">^=</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">F</span> <span class="o">^=</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="mh">0xffffffff</span> <span class="o">-</span> <span class="n">B</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="mh">0xeeeeeeee</span> <span class="o">^</span> <span class="n">C</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="mh">0xdeadbeef</span> <span class="o">^</span> <span class="n">D</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="mh">0x0c0ffee0</span> <span class="o">^</span> <span class="n">F</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="sh">'</span><span class="s">big</span><span class="sh">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">D</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Basically it uses A, B, C and D as an internal state.
+U can see, that the variables of the next round have the following dependencies:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>old_var -&gt; new_var (-&gt; == "determines")
+F -&gt; D
+D -&gt; C
+C -&gt; B
+B -&gt; A
+</code></pre></div></div>
+<p>As all updates consist of invertible operations (xor and subtraction or actually “not”)</p>
+
+<p>Additionally F is fully invertible if the state (A,B,C,D) is known.
+The inverse y comes from the message or block as input into the hash function.</p>
+
+<h3 id="mac">Mac</h3>
+<p>The mac is additionally constructed in a way, that is generally vulnerable to length-extensions attacks for MD hashes.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wonky_mac</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="nf">wonky_hash</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">message</span> <span class="o">+</span> <span class="n">tag</span>
+</code></pre></div></div>
+
+<p>Since we saw before, the hash function is basically invertible, we don’t even need this vulnerable construction to attack it.</p>
+
+<h2 id="solution">Solution</h2>
+<p>We can invert every operation that happens in this hash function. 
+Specifically we get the following two primitives:</p>
+<ol>
+  <li>Given a target state and a block we can decompress the target state and get a original state:<br />
+<strong>given</strong>:
+    <ul>
+      <li>target_state</li>
+      <li>block</li>
+    </ul>
+
+    <p><strong>return</strong>:</p>
+    <ul>
+      <li>state</li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">compress(state, block) == target_state</code></p>
+
+<ol>
+  <li>Also we can invert it in another way:<br />
+<strong>given</strong>:
+    <ul>
+      <li>target_state</li>
+      <li>state</li>
+    </ul>
+
+    <p><strong>return</strong>:</p>
+    <ul>
+      <li>block</li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">compress(state, block) == target_state</code></p>
+
+<ol>
+  <li>This together gives us a third primitive, which is preimage and way stronger than a collision:<br />
+<strong>given</strong>:
+    <ul>
+      <li>target_state</li>
+      <li>initial state of hash function is known to be <code class="language-plaintext highlighter-rouge">16 * b'\xcc'</code></li>
+    </ul>
+
+    <p><strong>return</strong>:</p>
+    <ul>
+      <li>message</li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">wonky_hash(message) == target_state</code></p>
+
+<p>To be very precise we can even choose the majority of the message and only require one block to be in a specific way.</p>
+
+<p>This primitive is just a chain of the first two:</p>
+<ol>
+  <li>Use the first one to get the state before padding was compressed into it:<br />
+<strong>given</strong>:
+    <ul>
+      <li>target_state</li>
+      <li>padding (through the nature of the hash)</li>
+    </ul>
+
+    <p><strong>return</strong>:</p>
+    <ul>
+      <li>state</li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">compress(state, padding) == target_state</code></p>
+
+<ol>
+  <li>Use the second one to get the block that will force the state returned by 1. :<br />
+<strong>given</strong>:
+    <ul>
+      <li>initial state (can be the output of <code class="language-plaintext highlighter-rouge">hash(message)</code> due to MD-construction)</li>
+      <li>state (from 1.)</li>
+    </ul>
+
+    <p><strong>return</strong>:</p>
+    <ul>
+      <li>block</li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">compress(initial_state,block) == state</code></p>
+
+<p>We get a block/message that gives the target hash value, if hashed.</p>
+
+<h3 id="collision">Collision</h3>
+<p>As the preimage is way stronger, creating a collision is trivial. 
+Considering that we can also choose an arbitrary big part of the preimage, there exists (of course it exists for all hashes, but can also be efficiently computed) infinitely many inputs for the same hash collision.</p>
+
+<h3 id="key-length">Key length</h3>
+<p>For the Mac, we are missing the secret. Due to the padding, we would also require it if we would try to do a casual <em>length-extension attack</em>. 
+In order to get the key length we can use the Oracle on the website and try out several key lengths until the tag is a valid tag for the message we put in -&gt; basically meaning, that the padding we guessed (containing the keylength) is correct.
+Thus we retrieve the key length once the server answers not with <code class="language-plaintext highlighter-rouge">None</code>.</p>
+
+<p>They key turns out to be 42, of course.</p>
+
+<p>As we have a preimage primitive, we are able to “uncompress” the message “Hello, world!” and get “some” key that behaves the same as the real one.</p>
+
+<p>As given a target state (the one before the “Hello, world!” was compressed into it) and an initial state (16 * b’\xcc’) the inverse function has no degrees of freedom/ is deterministic (the compression is a bijection of the form (block) &lt;-&gt; (initial_state, target_state)). We can choose the last 10 bytes in the key arbitrarly and retrieve a block for the first 32 bytes of the key, that does exactly what we want.</p>
+
+<p>To sum it up:</p>
+<ul>
+  <li>We can choose 10 bytes of the key arbitrarly.</li>
+  <li>The other 32 bytes are determined by that and the constraint of the hash’s initial state and final target state.</li>
+  <li>After all 42 bytes of the key are compressed (of course they aren’t compressed bytewise but let’s simplify), the real key and our key will leave the hash function in the same state.</li>
+</ul>
+
+<p>After that we can compress whatever we want into it and don’t need to extend the original message.</p>
+
+<p>This gives us valid Macs for arbitrary messages.</p>
+
+  </div><a class="u-url" href="/ctf/writeups/cryptanalysis/02/" hidden></a>
+</article>
+
+            </div>
+
+        </main>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+  </body>
+
+</html>
+

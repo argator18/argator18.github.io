@@ -1,0 +1,53 @@
+
+
+
+.sidebar {
+  grid-area: sidebar; /* ✅ Required for layout-grid to work */
+  width: 13em; /* Fixed width for the sidebar */
+  height: 100vh;
+  background-color: #333;
+  padding: 1rem;
+  color: white;
+  top: 0;
+  left: 0;
+    overflow: hidden; /* ✅ disables all scrolling */
+}
+
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding-left: 1em;
+}
+
+.submenu {
+  padding-left: 1em; /* Indent first-level submenu */
+}
+
+.subsubmenu {
+  padding-left: 2em; /* Further indent sub-submenu */
+  display: none; /* Hidden by default */
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  display: inline;
+  padding: 0;
+  transition: background 0.3s;
+}
+
+.sidebar a:hover {
+  color: #ccc; 
+  text-decoration: underline; 
+}
+.sidebar li:hover > .subsubmenu {
+  display: block; /* Reveals submenu */
+}
+.sidebar li > a::before {
+  color: #ccc;
+  font-size: 0.9em;
+}
+

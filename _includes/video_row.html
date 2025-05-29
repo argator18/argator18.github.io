@@ -1,0 +1,21 @@
+<div class="video-row">
+  <div class="video-title">
+      <header>
+          <h1 class="page-title">{{ include.title }}</h1>
+      </header>
+    {% include contact_links.html %}
+  </div>
+
+  <div class="video-wrapper">
+    <video 
+      class="round-video" 
+      loop 
+      muted 
+      autoplay 
+    >
+      <source src="{{ '/assets/daily/output2.mp4' | relative_url }}" type="video/mp4" />
+
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>

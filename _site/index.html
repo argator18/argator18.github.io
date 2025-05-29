@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Home | better late than never.</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Home" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="better late than never." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Home" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","headline":"Home","name":"better late than never.","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="better late than never." /><link rel="icon" href="/assets/favicon.gif" type="image/gif">
+
+</head>
+<body>
+      <div class="layout-grid">
+        <aside class="sidebar">
+          <nav class="sidebar">
+  <ul>
+    <li><a href="/">home</a></li>
+    <ul class="submenu">
+    <li>
+      <span>life</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>tech</span>
+      <ul class="subsubmenu">
+        <li><a href="/ctf">ctf</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>text</span>
+      <ul class="subsubmenu">
+        <li><a href="/text">thoughts</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>travel</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>vibes</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+
+
+        </aside>
+
+        <main class="main">
+
+
+    
+            <div class="container">
+                    <div class="video-row">
+  <div class="video-title">
+      <header>
+          <h1 class="page-title">Len Bauer</h1>
+      </header>
+    <div class="contact-links">
+  <a href="mailto:lh.bauer18@gmail.com"><strong>Email</strong></a>
+  <span>|</span>
+  <a href="https://matrix.to/#/@len1218:matrix.org" target="_blank"><strong>Matrix</strong></a>
+  <span>|</span>
+  <a href="https://signal.me/#eu/im6DoZ9kPdsJwHPOkSbT48xVKFLpUuGPTAgMEfsmPXiKwzdYG9pID5qSvBo7a8uG" target="_blank"><strong>Signal</strong></a>
+  <span>|</span>
+  <a href="https://wa.me/qr/ZPQM33EH2KZ6M1" target="_blank"><strong>WhatsApp</strong></a>
+</div>
+
+<div class="contact-links">
+  <a href="https://github.com/argator18" target="_blank"><strong>GitHub</strong></a>
+  <span>|</span>
+  <a href="https://www.linkedin.com/in/len-bauer-47248b235/" target="_blank"><strong>LinkedIn</strong></a>
+</div>
+
+<div class="contact-links">
+  <a href="https://www.instagram.com/lh.bauer18" target="_blank"><strong>Instagram</strong></a>
+  <span>|</span>
+  <a href="https://open.spotify.com/user/jensbauer18" target="_blank"><strong>Spotify</strong></a>
+  <span>|</span>
+  <a href="https://www.superprof.de/hacking-cybersecurity-and-ctfs-how-find-vulnerabilities-computer-systems-english-deutsch.html" target="_blank"><strong>Superprof</strong></a>
+</div>
+
+<div class="contact-links">
+  <a href="https://www.polarsteps.com/LenBauer" target="_blank"><strong>Polarsteps</strong></a>
+</div>
+
+  </div>
+
+  <div class="video-wrapper">
+    <video 
+      class="round-video" 
+      loop 
+      muted 
+      autoplay 
+    >
+      <source src="/assets/daily/output2.mp4" type="video/mp4" />
+
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<main class="page-content" aria-label="Content">
+<div class="wrapper">
+<div class="page-container">
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+
+  <div>
+      <button id="load-diff">Look back</button>
+<input type="date" id="lookback-date" value="2025-05-29">
+
+<pre id="diff-output"></pre>
+
+<script>
+  (async () => {
+    const BASE = "diff";  // relative to your site root
+    let snapshots = [];
+
+    // 1) load the list of available dates
+    try {
+      const res = await fetch(`${BASE}/index.json`);
+      snapshots = await res.json();  // e.g. ["20030805","20051109",...]
+    } catch (e) {
+      console.error("Could not load diff/index.json", e);
+      snapshots = [];
+    }
+
+    // 2) pick the greatest YYYYMMDD ≤ dateStr
+    function pickSnapshot(dateStr) {
+      const key = dateStr.replace(/-/g, "");
+      const earlier = snapshots.filter(d => d <= key);
+      return earlier.length
+        ? earlier.reduce((a,b) => a > b ? a : b)
+        : null;
+    }
+
+    // 3) fetch & inject the HTML
+    async function loadDiff() {
+      let date = document.getElementById("lookback-date").value;
+      if (!date) {
+          document.getElementById("lookback-date").value = "2025-05-29";
+          date = document.getElementById("lookback-date").value;
+      }
+      const out  = document.getElementById("diff-output");
+      const snap = pickSnapshot(date);
+
+      if (!snap) {
+        out.textContent = "The good old days (without me).";
+        return;
+      }
+
+      out.textContent = "Loading…";
+      try {
+        const res  = await fetch(`${BASE}/compare-${snap}.html`);
+        if (!res.ok) throw new Error(res.statusText);
+        out.innerHTML = await res.text();
+      } catch (err) {
+        console.error(err);
+        out.textContent = `Error loading diff for ${date}`;
+      }
+    }
+
+    // wire up events
+    document.getElementById("load-diff")
+            .addEventListener("click", loadDiff);
+    document.getElementById("lookback-date")
+            .addEventListener("change", loadDiff);
+
+    // initial load
+    loadDiff();
+  })();
+</script>
+
+
+  </div>
+</div>
+
+
+</div>
+</main>
+
+            </div>
+
+        </main>
+    </div>
+
+    
+  </body>
+
+</html>
+

@@ -1,0 +1,23 @@
+.contact-links {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin: 1em 0;
+  line-height: 1.6;
+}
+
+.contact-links a {
+  text-decoration: none;
+}
+
+.contact-links span {
+  color: #999;
+}
+
+.contact-links {
+  /* ... rest of the styles */
+  letter-spacing: 0.5px;
+}

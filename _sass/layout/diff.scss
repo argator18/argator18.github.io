@@ -1,0 +1,10 @@
+#diff-output {
+  white-space: pre-wrap;   /* Ensures text wraps onto the next line if needed */
+}
+
+
+#diff-output span,
+#diff-output a {
+  word-break: break-word;
+}
+

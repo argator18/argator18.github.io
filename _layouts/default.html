@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <body>
+      <div class="layout-grid">
+        <aside class="sidebar">
+          {% include sidebar.html %}
+        </aside>
+
+        <main class="main">
+
+
+    
+            <div class="container">
+                    {{ content }}
+            </div>
+
+        </main>
+    </div>
+
+    {% if page.mathjax %}
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    {% endif %}
+  </body>
+
+</html>
+

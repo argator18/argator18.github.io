@@ -1,0 +1,30 @@
+.round-video {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.video-row {
+  display: flex;
+  justify-content: center;
+  gap: 15rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.video-title h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.video-title {
+  text-align: left;
+}
+
+.video-wrapper {
+  text-align: right;
+}

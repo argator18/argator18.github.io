@@ -1,0 +1,14 @@
+.post-content a {
+  color: $link-color;
+  text-decoration: none;
+
+  &:visited {
+    color: $visited-link-color;
+  }
+
+  &:hover {
+    color: $link-color;
+    text-decoration: underline;
+  }
+}
+

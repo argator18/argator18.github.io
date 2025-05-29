@@ -1,0 +1,25 @@
+<button id="load-diff">Look back:</button>
+<input type="date" id="lookback-date" value="{{ "now" | date: "%Y-%m-%d" }}">
+
+<pre id="diff-output"></pre>
+
+
+
+<script>
+async function loadDiff() {
+  const date = document.getElementById("lookback-date").value;
+  const output = document.getElementById("diff-output");
+  output.textContent = "Loading...";
+
+  const res = await fetch(`http://localhost:5000/compare?date=${date}`);
+  const text = await res.text();
+  output.innerHTML = text;
+}
+document.getElementById("load-diff").addEventListener("click", loadDiff);
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("load-diff").addEventListener("click", loadDiff);
+  loadDiff(); // 🔁 Automatically trigger on page load
+});
+</script>
+
+

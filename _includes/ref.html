@@ -1,0 +1,13 @@
+{%- comment -%}
+  Usage:
+    {% include ref.html id="tom" %}
+    {% include ref.html id="alice" text="My own link text" %}
+{%- endcomment -%}
+
+{%- assign entry = site.data.refs[include.id] -%}
+{%- if entry -%}
+  <a href="{{ entry.url }}">{{ include.text | default: entry.label }}</a>
+{%- else -%}
+  <!-- missing ref "{{ include.id }}" -->
+{%- endif -%}
+

@@ -1,0 +1,65 @@
+<button id="load-diff">Look back</button>
+<input type="date" id="lookback-date" value="{{ "now" | date: "%Y-%m-%d" }}">
+
+<pre id="diff-output"></pre>
+
+<script>
+  (async () => {
+    const BASE = "diff";  // relative to your site root
+    let snapshots = [];
+
+    // 1) load the list of available dates
+    try {
+      const res = await fetch(`${BASE}/index.json`);
+      snapshots = await res.json();  // e.g. ["20030805","20051109",...]
+    } catch (e) {
+      console.error("Could not load diff/index.json", e);
+      snapshots = [];
+    }
+
+    // 2) pick the greatest YYYYMMDD ≤ dateStr
+    function pickSnapshot(dateStr) {
+      const key = dateStr.replace(/-/g, "");
+      const earlier = snapshots.filter(d => d <= key);
+      return earlier.length
+        ? earlier.reduce((a,b) => a > b ? a : b)
+        : null;
+    }
+
+    // 3) fetch & inject the HTML
+    async function loadDiff() {
+      let date = document.getElementById("lookback-date").value;
+      if (!date) {
+          document.getElementById("lookback-date").value = "{{ "now" | date: "%Y-%m-%d" }}";
+          date = document.getElementById("lookback-date").value;
+      }
+      const out  = document.getElementById("diff-output");
+      const snap = pickSnapshot(date);
+
+      if (!snap) {
+        out.textContent = "The good old days (without me).";
+        return;
+      }
+
+      out.textContent = "Loading…";
+      try {
+        const res  = await fetch(`${BASE}/compare-${snap}.html`);
+        if (!res.ok) throw new Error(res.statusText);
+        out.innerHTML = await res.text();
+      } catch (err) {
+        console.error(err);
+        out.textContent = `Error loading diff for ${date}`;
+      }
+    }
+
+    // wire up events
+    document.getElementById("load-diff")
+            .addEventListener("click", loadDiff);
+    document.getElementById("lookback-date")
+            .addEventListener("change", loadDiff);
+
+    // initial load
+    loadDiff();
+  })();
+</script>
+

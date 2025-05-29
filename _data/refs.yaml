@@ -1,0 +1,8 @@
+# _data/refs.yml
+tom:
+  url:   "https://example.com/tom"
+  label: "Tom"
+alice:
+  url:   "https://example.org/alice-profile"
+  label: "Alice"
+

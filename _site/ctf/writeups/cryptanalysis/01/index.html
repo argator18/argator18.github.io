@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Vigenere Shiffre | better late than never.</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Vigenere Shiffre" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Description In this challenge you’re given the Vigenère encryption of a long string consisting of concatenated English words. The goal is to recover the secret key." />
+<meta property="og:description" content="Description In this challenge you’re given the Vigenère encryption of a long string consisting of concatenated English words. The goal is to recover the secret key." />
+<link rel="canonical" href="http://localhost:4000/ctf/writeups/cryptanalysis/01/" />
+<meta property="og:url" content="http://localhost:4000/ctf/writeups/cryptanalysis/01/" />
+<meta property="og:site_name" content="better late than never." />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-05T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vigenere Shiffre" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-05-05T00:00:00+02:00","datePublished":"2025-05-05T00:00:00+02:00","description":"Description In this challenge you’re given the Vigenère encryption of a long string consisting of concatenated English words. The goal is to recover the secret key.","headline":"Vigenere Shiffre","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ctf/writeups/cryptanalysis/01/"},"url":"http://localhost:4000/ctf/writeups/cryptanalysis/01/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="better late than never." /><link rel="icon" href="/assets/favicon.gif" type="image/gif">
+
+</head>
+<body>
+      <div class="layout-grid">
+        <aside class="sidebar">
+          <nav class="sidebar">
+  <ul>
+    <li><a href="/">home</a></li>
+    <ul class="submenu">
+    <li>
+      <span>life</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>tech</span>
+      <ul class="subsubmenu">
+        <li><a href="/ctf">ctf</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>text</span>
+      <ul class="subsubmenu">
+        <li><a href="/text">thoughts</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <span>travel</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+    <li>
+      <span>vibes</span>
+      <ul class="subsubmenu">
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+
+
+        </aside>
+
+        <main class="main">
+
+
+    
+            <div class="container">
+                    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Vigenere Shiffre</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-05T00:00:00+02:00" itemprop="datePublished">May 5, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="description">Description</h2>
+<p>In this challenge you’re given the Vigenère encryption of a long string consisting of concatenated English words. The goal is to recover the secret key.</p>
+
+<h2 id="solution">Solution</h2>
+<p>The key in this challenge is the knowledge about the plaintext to consist of english words. This results in an inhomogenous distribution of the letters in the plaintext, as letters aren’t equally distributed in english language.</p>
+
+<p>We can look up a general distribution of letters in the english language:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'A': 8.167, 'B': 1.492, 'C': 2.782, 'D': 4.253, 'E': 12.702,
+'F': 2.228, 'G': 2.015, 'H': 6.094, 'I': 6.966, 'J': 0.153,
+'K': 0.772, 'L': 4.025, 'M': 2.406, 'N': 6.749, 'O': 7.507,
+'P': 1.929, 'Q': 0.095, 'R': 5.987, 'S': 6.327, 'T': 9.056,
+'U': 2.758, 'V': 0.978, 'W': 2.360, 'X': 0.150, 'Y': 1.974,
+'Z': 0.074
+</code></pre></div></div>
+
+<p>Obviously E appears way more often than Z e.g.</p>
+
+<p>A fast and cheap approach would include only using the numbers of E as a measure of equality to the english language and hence to the plaintext distribution, but there is the chance, that E is actually not the most frequent character and e.g. T is. This would result in doing mistakes at some indices of the key.</p>
+
+<h3 id="vigenere">Vigenere</h3>
+<p>The Vigenere Chiffre is like the Ceasar chiffre only a shift of the characters, but in this case the text is splitted into blocks of the lengths of the key and each index in these blocks is shifted by a different value, but by the same for the same index through all blocks.
+This gives us keylength different ceasar chiffre encryptions, that need to be decrypted.
+In theory to iterate through all possible decryptions we end up with \(26^\text{keylength}\) but we get an advantage, cause we found a way to measure which of these 26 possible ceasar shifts is the most likely.</p>
+
+<h3 id="keylength">Keylength</h3>
+<p>In this case the keylength is assumed to be less than 50, but not known. Note that this method only works, as the ciphertext is way longer than the keylength and hence we can iterate for each index or position of the key enough characters to have a representative distribution.</p>
+
+<p>So how do we find the keylength now?
+While there are much faster approaches like only using E’s frequency as described above or searching for specific sequences in the ciphertext, that are appearing several times and could correspond to repeating sequences like ‘ing’ in the plaintext, these approaches are more vulnerable to mistakes, as these sequence could appear in the ciphertext randomly without the plaintext being ‘ing’.</p>
+
+<p>So we just iterate through all possible keylengths and return the one, that includes after shifting each position “best possible” a distribution as close as possible to the english one.</p>
+
+<p>Another small note is, that if we didn’t have such an upper bound on the keylength, or the keylength was let’s say 10, just taking the lowest avg chi-squared wouldn’t work. Obviously multiples of the key cannot make the test statistic worse, as in worst case they can use the original key repeated several times. So they are more flexible but have at least the same test-statistic. So mutliples of the real keylength will have a smaller statistic and selecting them would not result in the correct decryption. In this case this problem didn’t appear, as there are no mutliples of 37 (which is in this task the keylength) below 50.</p>
+
+<h3 id="difference-between-current-distribution-and-english-language-letter-distribution">Difference between current distribution and english language letter distribution</h3>
+<p>To compute the difference between two discrete distributions, there are many different metrices.
+Only considering the E as described above can be seen as only comparing the distributions peaks, which obviously doesn’t compare them very well, as only a fraction of their information is used.</p>
+
+<p>Other well known metrices are KL-divergence, Shannon divergence or chi-squared. The first two unfortunately don’t behave very well when there are 0 entries, as they use log and hence the statistic evaluates to infitiny. So if e.g. Z doesn’t appear at all in our distribution the statistic concludes that both distributions can’t be “similar”. This could be solved through adding a small positive frequency offset to all frequencies ( and normalize again), but this still gives rare events a big influence or hat-value. Hence I decided to use the chi squared test statistic to compare the distributions. If the statistic is small and close to 0 this means, that both distributions are fairly close to each other and we might have chosen the correct shift (key character) for this position.</p>
+
+<h1 id="key">Key</h1>
+<p><code class="language-plaintext highlighter-rouge">XERKBKMLWERKQVTKIFUEEKMDEGASQNFTBZYPV</code></p>
+
+
+  </div><a class="u-url" href="/ctf/writeups/cryptanalysis/01/" hidden></a>
+</article>
+
+            </div>
+
+        </main>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+  </body>
+
+</html>
+
