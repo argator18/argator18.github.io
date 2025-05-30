@@ -126,7 +126,7 @@
 
   <div>
       <button id="load-diff">Look back</button>
-<input type="date" id="lookback-date" value="2025-05-29">
+<input type="date" id="lookback-date" value="2025-05-30">
 
 <pre id="diff-output"></pre>
 
@@ -157,7 +157,7 @@
     async function loadDiff() {
       let date = document.getElementById("lookback-date").value;
       if (!date) {
-          document.getElementById("lookback-date").value = "2025-05-29";
+          document.getElementById("lookback-date").value = "2025-05-30";
           date = document.getElementById("lookback-date").value;
       }
       const out  = document.getElementById("diff-output");
