@@ -119,17 +119,54 @@
       Your browser does not support the video tag.
     </video>
   </div>
-  <script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
-    var v = document.getElementsByClassName("round-video")[0];    // Ensure it begins loading
-    v.load();
+    var vid = document.getElementsByClassName("round-video")[0];    
 
-    v.addEventListener('canplaythrough', function () {
-      v.style.visibility = 'visible';
-        console.log("uuu");
+    // Start loading the video right away
+    vid.load();
+
+    // handler to check buffered ranges
+    function checkIfFullyBuffered() {
+      // The video might not have duration yet (duration === NaN) if metadata isn't loaded
+      var duration = vid.duration;
+      if (isNaN(duration) || duration <= 0) return;
+
+      // buffered is a TimeRanges object. buffered.length usually === 1 for progressive MP4
+      if (vid.buffered.length) {
+        var bufferedEnd = vid.buffered.end(0);
+        // Use a small epsilon to account for rounding errors
+        if (bufferedEnd >= duration - 0.1) {
+          // Fully buffered. Show the video and play/loop it.
+          vid.style.visibility = 'visible';
+          vid.play().catch(function (err) {
+            // If autoplay is blocked for some reason, we can ignore or log
+            console.warn('Play request failed:', err);
+          });
+          // Remove the event listener so we stop checking after full buffer
+          vid.removeEventListener('progress', checkIfFullyBuffered);
+        }
+      }
+    }
+
+    // Listen for progress events that fire whenever the browser receives more data
+    vid.addEventListener('progress', checkIfFullyBuffered);
+
+    // As a fallback, also listen for loadedmetadata, so we know duration is available
+    vid.addEventListener('loadedmetadata', checkIfFullyBuffered);
+
+    // Edge case: if the video is super small, canplaythrough might fire before progress
+    vid.addEventListener('canplaythrough', function () {
+      // Still check via our function—some browsers fire canplaythrough early.
+      checkIfFullyBuffered();
     });
+
+    // In case the video is already completely cached (unlikely on first load),
+    // do one immediate check after a tiny delay.
+    setTimeout(checkIfFullyBuffered, 200);
   });
 </script>
+
 </div>
 
 <main class="page-content" aria-label="Content">
