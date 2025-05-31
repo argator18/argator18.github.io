@@ -107,15 +107,31 @@
   <div class="video-wrapper">
     <video 
       class="round-video" 
+      preload="auto"
       loop 
       muted 
       autoplay 
+      playsinline
+      style="visibility: hidden;"
     >
       <source src="/assets/daily/profile.mp4" type="video/mp4" />
 
       Your browser does not support the video tag.
     </video>
   </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var v = document.getElementById('profileVid');
+    // Ensure it begins loading
+    v.load();
+
+    v.addEventListener('canplaythrough', function () {
+      // Video is buffered enough to play from start to finish without stalling
+      v.style.visibility = 'visible';
+      // (It’s already set to autoplay, so it will start playing now.)
+    });
+  });
+</script>
 </div>
 
 <main class="page-content" aria-label="Content">
