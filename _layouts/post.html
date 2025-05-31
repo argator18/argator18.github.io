@@ -2,27 +2,28 @@
 layout: default
 mathjax: true
 ---
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-        {{ page.date | date: date_format }}
-      </time>
-      {%- if page.author -%}
-        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
-      {%- endif -%}</p>
-  </header>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    {{ content }}
+{% assign segments = page.url | split: '/' %}
+  {% assign len      = segments | size %}
+  {% assign new_len  = len | minus: 1 %}
+  {% assign parent_segments = segments | slice: 0, new_len %}
+  {% assign parent_url      = parent_segments | join: '/' %}
+<div class="post-layout">
+  <!-- Move .nav-up inside the same .post-header as the H1 -->
+  <div class="post-header">
+    <a
+      href="{{ parent_url | relative_url }}"
+      class="nav-up"
+      style="text-decoration: none; font-family: monospace; font-size: 1.2rem;"
+      >..</a
+    >
+    <h1 class="post-title">{{ page.title }}</h1>
   </div>
 
-  {%- if site.disqus.shortname -%}
-    {%- include disqus_comments.html -%}
-  {%- endif -%}
-
-  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
-</article>
+  <div class="content-wrapper">
+    <article class="post-content">
+      {{ content }}
+    </article>
+  </div>
+</div>

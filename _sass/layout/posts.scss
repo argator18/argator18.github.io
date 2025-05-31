@@ -12,3 +12,82 @@
   }
 }
 
+
+// ───────────────────────────────────────────────────────────────────
+// POST‐ONLY STYLES (scoped to body.post-layout)
+// ───────────────────────────────────────────────────────────────────
+
+
+.post-layout {
+  font-family: sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.post-layout .content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;              // center horizontally, no top margin
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 2rem;               // 2rem on all sides
+}
+
+.post-layout .content-wrapper {
+  /* remove top padding so the H1 is at the very top */
+  padding-top: 0;
+}
+
+.post-layout .post-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;     // center the title
+  position: relative;          // so .nav-up can be absolute within it
+  margin-bottom: 2rem;
+}
+
+.post-layout .nav-up {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: monospace;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: #555;
+  line-height: 1;
+}
+.post-layout .nav-up:hover {
+  color: #111;
+}
+
+.post-layout .post-title {
+  margin: 0;
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.post-layout .post-content h2 {
+  font-size: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.post-layout .post-content h3 {
+  font-size: 1.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+.post-layout .post-content p,
+.post-layout .post-content li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.post-layout .post-content pre {
+  background-color: #f4f4f4;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}

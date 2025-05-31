@@ -72,17 +72,26 @@
 
     
             <div class="container">
-                    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+                    
+  
+  
+  
+  
+<div class="post-layout">
+  <!-- Move .nav-up inside the same .post-header as the H1 -->
+  <div class="post-header">
+    <a
+      href="/ctf/writeups/cryptanalysis"
+      class="nav-up"
+      style="text-decoration: none; font-family: monospace; font-size: 1.2rem;"
+      >..</a
+    >
+    <h1 class="post-title">Hashes and Macs</h1>
+  </div>
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Hashes and Macs</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-08T00:00:00+02:00" itemprop="datePublished">May 8, 2025
-      </time></p>
-  </header>
-
-  <div class="post-content e-content" itemprop="articleBody">
-    <h1 id="wonky-hash--mac">Wonky hash &amp; mac</h1>
+  <div class="content-wrapper">
+    <article class="post-content">
+      <h1 id="wonky-hash--mac">Wonky hash &amp; mac</h1>
 <h2 id="description">Description</h2>
 <p>In this challenge you’re given a very bad hash function and an associated very bad MAC construction.</p>
 
@@ -267,8 +276,9 @@ Thus we retrieve the key length once the server answers not with <code class="la
 
 <p>This gives us valid Macs for arbitrary messages.</p>
 
-  </div><a class="u-url" href="/ctf/writeups/cryptanalysis/02/" hidden></a>
-</article>
+    </article>
+  </div>
+</div>
 
             </div>
 

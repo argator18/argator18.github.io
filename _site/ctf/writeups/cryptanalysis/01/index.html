@@ -72,17 +72,26 @@
 
     
             <div class="container">
-                    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+                    
+  
+  
+  
+  
+<div class="post-layout">
+  <!-- Move .nav-up inside the same .post-header as the H1 -->
+  <div class="post-header">
+    <a
+      href="/ctf/writeups/cryptanalysis"
+      class="nav-up"
+      style="text-decoration: none; font-family: monospace; font-size: 1.2rem;"
+      >..</a
+    >
+    <h1 class="post-title">Vigenere Shiffre</h1>
+  </div>
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Vigenere Shiffre</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-05T00:00:00+02:00" itemprop="datePublished">May 5, 2025
-      </time></p>
-  </header>
-
-  <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="description">Description</h2>
+  <div class="content-wrapper">
+    <article class="post-content">
+      <h2 id="description">Description</h2>
 <p>In this challenge you’re given the Vigenère encryption of a long string consisting of concatenated English words. The goal is to recover the secret key.</p>
 
 <h2 id="solution">Solution</h2>
@@ -127,8 +136,9 @@ Only considering the E as described above can be seen as only comparing the dist
 <p><code class="language-plaintext highlighter-rouge">XERKBKMLWERKQVTKIFUEEKMDEGASQNFTBZYPV</code></p>
 
 
-  </div><a class="u-url" href="/ctf/writeups/cryptanalysis/01/" hidden></a>
-</article>
+    </article>
+  </div>
+</div>
 
             </div>
 
